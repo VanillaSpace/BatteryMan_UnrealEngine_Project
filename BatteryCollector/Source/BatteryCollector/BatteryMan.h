@@ -32,11 +32,32 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		UCameraComponent* FollowCamera;
+	
 
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
 	
 	bool bDead;
+
+	//Visble but cannot be changed
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		float Power;
+
+	//can be edited in the Unreal Editor
+	UPROPERTY(EditAnywhere)
+		float Power_Treshold;
+
+	UFUNCTION()
+		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
+			class AActor* OtherActor,
+			class UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult & SweepResult);
+
+	UPROPERTY(EditAnywhere, Category = "UI HUD")
+		TSubclassOf<UUserWidget> Player_Power_Widget_Class;
+		UUserWidget* Player_Power_Widget;
 	
 	
 

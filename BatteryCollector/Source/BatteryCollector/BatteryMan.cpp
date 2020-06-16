@@ -41,9 +41,12 @@ ABatteryMan::ABatteryMan()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	bDead = false;
+
+	Power = 100.0f;
 	
 
 }
+
 
 
 
@@ -51,6 +54,15 @@ ABatteryMan::ABatteryMan()
 void ABatteryMan::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABatteryMan::OnBeginOverlap);
+
+	if (Player_Power_Widget_Class!= nullptr)
+	{
+		Player_Power_Widget = CreateWidget(GetWorld(), Player_Power_Widget_Class);
+		Player_Power_Widget->AddToViewport();
+		
+	}
 	
 }
 
@@ -58,6 +70,13 @@ void ABatteryMan::BeginPlay()
 void ABatteryMan::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	Power -= DeltaTime * Power_Treshold;
+
+	if (Power <= 0)
+	{
+		bDead = true;
+	}
 
 }
 
@@ -103,4 +122,21 @@ void ABatteryMan::MoveRight(float Axis)
 	}
 }
 
+void ABatteryMan::OnBeginOverlap(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag("Recharge"))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Collide With"));
+
+		Power += 10.0f;
+
+		if(Power> 100.0f)
+		{
+			Power = 100.0f;
+		}
+
+		OtherActor->Destroy();
+	}
+}
 
